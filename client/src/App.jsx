@@ -4,10 +4,12 @@ function App() {
   const [contacts, setContacts] = useState([]);
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
 
+  // Load contacts on mount
   useEffect(() => {
-    fetch('http://localhost:8000/contacts.php')
+    fetch('http://localhost:3001/api/contacts')
       .then(res => res.json())
-      .then(data => setContacts(data));
+      .then(data => setContacts(data))
+      .catch(err => console.error('Error fetching contacts:', err));
   }, []);
 
   const handleChange = (e) => {
@@ -16,30 +18,37 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch('http://localhost:8000/contacts.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form)
-    });
 
-    // Refresh contacts
-    const res = await fetch('http://localhost:8000/contacts.php');
-    const data = await res.json();
-    setContacts(data);
-    setForm({ name: '', email: '', phone: '' });
+    try {
+      await fetch('http://localhost:3001/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+
+      const res = await fetch('http://localhost:3001/api/contacts');
+      const data = await res.json();
+      setContacts(data);
+      setForm({ name: '', email: '', phone: '' });
+    } catch (error) {
+      console.error('Error submitting contact:', error);
+    }
   };
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:8000/contacts.php`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `id=${id}`
-    });
+    try {
+      await fetch('http://localhost:3001/api/contacts', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${id}`
+      });
 
-    // Refresh contacts
-    const res = await fetch('http://localhost:8000/contacts.php');
-    const data = await res.json();
-    setContacts(data);
+      const res = await fetch('http://localhost:3001/api/contacts');
+      const data = await res.json();
+      setContacts(data);
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+    }
   };
 
   return (
