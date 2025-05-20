@@ -1,0 +1,11 @@
+# React build output
+client/dist
+
+# Node modules
+client/node_modules/
+
+# PHP cache
+server/api/*.log
+
+# Simulated DB
+server/api/contacts.json
